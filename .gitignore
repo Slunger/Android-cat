@@ -1,0 +1,25 @@
+*.iml
+.idea/
+
+# Gradle generated files
+.gradle/
+
+gradle/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Built application files
+/*/build/
+
+.navigation/
+
+# OS-specific files
+.DS_Store
+
+captures/
+
+*.log
+*.apk
+*.ap_
+*.dex
