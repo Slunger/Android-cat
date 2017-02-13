@@ -10,7 +10,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.cats.android.R;
-import com.cats.android.dummy.DummyContent;
+import com.cats.android.data.CatContent;
+import com.cats.android.model.Cat;
 import com.cats.android.ui.activities.ItemDetailActivity;
 import com.cats.android.ui.activities.ItemListActivity;
 
@@ -24,7 +25,7 @@ public class ItemDetailFragment extends Fragment {
 
     public static final String ARG_ITEM_ID = "item_id";
 
-    private DummyContent.DummyItem mItem;
+    private Cat cat;
 
     public ItemDetailFragment() {
     }
@@ -35,12 +36,12 @@ public class ItemDetailFragment extends Fragment {
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
 
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            cat = CatContent.getItemMap().get(getArguments().getInt(ARG_ITEM_ID));
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.content);
+                appBarLayout.setTitle(cat.getName());
             }
         }
     }
@@ -50,8 +51,8 @@ public class ItemDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.item_detail, container, false);
 
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.details);
+        if (cat != null) {
+            ((TextView) rootView.findViewById(R.id.item_detail)).setText(cat.toString());
         }
 
         return rootView;
