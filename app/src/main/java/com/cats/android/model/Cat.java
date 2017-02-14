@@ -1,12 +1,15 @@
 package com.cats.android.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
  * Created by andrey on 13.02.17.
  */
 
-public class Cat {
+public class Cat implements Serializable {
+
+    private static final long serialVersionUID = -5589346248082396042L;
 
     private Integer id;
 
@@ -118,56 +121,5 @@ public class Cat {
                 ", breed='" + breed + '\'' +
                 ", weight=" + weight +
                 '}';
-    }
-
-    public static Builder create() {
-        return new Builder();
-    }
-
-    public static final class Builder {
-        private Integer id;
-        private int age;
-        private String color;
-        private String breed;
-        private String name;
-        private int weight;
-
-        public Builder setId(Integer id) {
-            this.id = id;
-            return this;
-        }
-
-        public Builder setAge(int age) {
-            this.age = age;
-            return this;
-        }
-
-        public Builder setColor(String color) {
-            this.color = color;
-            return this;
-        }
-
-        public Builder setBreed(String breed) {
-            this.breed = breed;
-            return this;
-        }
-
-        public Builder setName(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public Builder setWeight(int weight) {
-            this.weight = weight;
-            return this;
-        }
-
-        public Cat get() {
-            if (id == null) {
-                return new Cat(age, color, breed, name, weight);
-            } else {
-                return new Cat(id, age, color, breed, name, weight);
-            }
-        }
     }
 }

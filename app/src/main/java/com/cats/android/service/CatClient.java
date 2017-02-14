@@ -4,6 +4,7 @@ import com.cats.android.model.Cat;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
@@ -22,14 +23,14 @@ public interface CatClient {
     Call<List<Cat>> getAll();
 
     @POST("/cats")
-    void create(@Body Cat cat);
+    Call<ResponseBody> create(@Body Cat cat);
 
     @PUT("/cats/{id}")
-    void update(@Path("id") Integer id, @Body Cat cat);
+    Call<ResponseBody> update(@Path("id") Integer id, @Body Cat cat);
 
     @GET("/cats/{id}")
     Call<Cat> get(@Path("id") Integer id);
 
     @DELETE("/cats/{id}")
-    void delete(@Path("id") Integer id);
+    Call<ResponseBody> delete(@Path("id") Integer id);
 }

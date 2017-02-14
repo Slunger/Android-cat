@@ -2,10 +2,11 @@ package com.cats.android.ui.activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -25,6 +26,7 @@ import com.cats.android.model.Cat;
 import com.cats.android.service.MyIntentService;
 import com.cats.android.ui.fragments.ItemDetailFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,7 +45,7 @@ public class ItemListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
 
-    private View recyclerView;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +60,20 @@ public class ItemListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "Add", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), isNetworkAvailable().toString(), Toast.LENGTH_LONG).show();
             }
         });
 
-        recyclerView = findViewById(R.id.item_list);
+        recyclerView = (RecyclerView) findViewById(R.id.item_list);
         assert recyclerView != null;
-        displayAllCats((RecyclerView) recyclerView);
+
+        testDataCat();
+
+        if (CatContent.getITEMS() == null) {
+            updateRecyclerView();
+        } else {
+            setRecyclerView();
+        }
 
         if (findViewById(R.id.item_detail_container) != null) {
             // The detail container view will be present only in the
@@ -73,6 +82,13 @@ public class ItemListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
+    }
+
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
     @Override
@@ -86,26 +102,49 @@ public class ItemListActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.reload) {
-            displayAllCats((RecyclerView) recyclerView);
+            updateRecyclerView();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void displayAllCats(final @NonNull RecyclerView recyclerView) {
+    private void updateRecyclerView() {
         MyIntentService.getAll(this, new ResultReceiver(new Handler()) {
             @Override
             public void onReceiveResult(int resultCode, Bundle resultData) {
                 if (resultCode == RESULT_OK) {
                     List<Cat> cats = CatContent.getITEMS();
                     if (cats != null) {
-                        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter());
+                        setRecyclerView();
                     } else {
-                        Toast.makeText(getApplicationContext(), CatContent.getResponse(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), resultData.getString("response"), Toast.LENGTH_LONG).show();
                     }
                 }
             }
         });
+    }
+
+    private void testDataCat() {
+        List<Cat> cats = new ArrayList<>();
+        int age = 1, weight = 1;
+        int id = 1;
+        Cat cat = new Cat(id++, age++, "white", "Cyprus", "Kitty", weight++);
+        cats.add(cat);
+        cat = new Cat(id++, age++, "lavender", "Sphynx", "Byte", weight++);
+        cats.add(cat);
+        cat = new Cat(id++, age, "chocolate", "European Shorthair", "Yoda", weight);
+        cats.add(cat);
+        cat = new Cat(id++, age++, "tortoiseshell", "Siamese", "Picasso", weight++);
+        cats.add(cat);
+        cat = new Cat(id++, age++, "black", "Exotic Shorthair", "Lancelot", weight++);
+        cats.add(cat);
+        cat = new Cat(id++, age, "chocolate", "Asian", "eEwok", weight);
+        cats.add(cat);
+        CatContent.putItems(cats);
+    }
+
+    private void setRecyclerView() {
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter());
     }
 
     public class SimpleItemRecyclerViewAdapter

@@ -12,6 +12,7 @@ import com.cats.android.model.Cat;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -25,11 +26,7 @@ public class MyIntentService extends IntentService {
     private static final String DELETE = "delete";
 
     private static final String ID = "id";
-    private static final String CAT_AGE = "cat_age";
-    private static final String CAT_COLOR = "cat_color";
-    private static final String CAT_BREED = "cat_breed";
-    private static final String CAT_NAME = "cat_name";
-    private static final String CAT_WEIGHT = "cat_weight";
+    private static final String CAT = "cat";
 
     public MyIntentService() {
         super("MyIntentService");
@@ -45,11 +42,7 @@ public class MyIntentService extends IntentService {
     public static void create(Context context, ResultReceiver rec, Cat cat) {
         Intent intent = new Intent(context, MyIntentService.class);
         intent.setAction(CREATE);
-        intent.putExtra(CAT_AGE, cat.getAge());
-        intent.putExtra(CAT_COLOR, cat.getColor());
-        intent.putExtra(CAT_BREED, cat.getBreed());
-        intent.putExtra(CAT_NAME, cat.getName());
-        intent.putExtra(CAT_WEIGHT, cat.getWeight());
+        intent.putExtra(CAT, cat);
         intent.putExtra("receiver", rec);
         context.startService(intent);
     }
@@ -57,12 +50,7 @@ public class MyIntentService extends IntentService {
     public static void update(Context context, ResultReceiver rec, Cat cat) {
         Intent intent = new Intent(context, MyIntentService.class);
         intent.setAction(UPDATE);
-        intent.putExtra(ID, cat.getId());
-        intent.putExtra(CAT_AGE, cat.getAge());
-        intent.putExtra(CAT_COLOR, cat.getColor());
-        intent.putExtra(CAT_BREED, cat.getBreed());
-        intent.putExtra(CAT_NAME, cat.getName());
-        intent.putExtra(CAT_WEIGHT, cat.getWeight());
+        intent.putExtra(CAT, cat);
         intent.putExtra("receiver", rec);
         context.startService(intent);
     }
@@ -94,26 +82,12 @@ public class MyIntentService extends IntentService {
             if (GET_ALL.equals(action)) {
                 getAll();
             } else if (CREATE.equals(action)) {
-                Cat cat = Cat.create()
-                        .setAge(i.getIntExtra(CAT_AGE, 0))
-                        .setBreed(i.getStringExtra(CAT_BREED))
-                        .setColor(i.getStringExtra(CAT_COLOR))
-                        .setName(i.getStringExtra(CAT_NAME))
-                        .setWeight(i.getIntExtra(CAT_WEIGHT, 0))
-                        .get();
+                Cat cat = (Cat) i.getSerializableExtra(CAT);
                 create(cat);
             } else if (UPDATE.equals(action)) {
-                Cat cat = Cat.create()
-                        .setId(i.getIntExtra(ID, 0))
-                        .setAge(i.getIntExtra(CAT_AGE, 0))
-                        .setBreed(i.getStringExtra(CAT_BREED))
-                        .setColor(i.getStringExtra(CAT_COLOR))
-                        .setName(i.getStringExtra(CAT_NAME))
-                        .setWeight(i.getIntExtra(CAT_WEIGHT, 0))
-                        .get();
+                Cat cat = (Cat) i.getSerializableExtra(CAT);
                 create(cat);
-                Integer id = i.getIntExtra(ID, cat.getId());
-                update(id, cat);
+                update(cat.getId(), cat);
             } else if (GET.equals(action)) {
                 Integer id = i.getIntExtra(ID, 0);
                 get(id);
@@ -133,17 +107,19 @@ public class MyIntentService extends IntentService {
             @Override
             public void onResponse(Call<List<Cat>> call, Response<List<Cat>> response) {
                 List<Cat> cats = response.body();
+                Bundle bundle = new Bundle();
                 if (cats != null) {
                     CatContent.putItems(cats);
                 } else {
-                    CatContent.setResponse(response.message());
+                    bundle.putString("response", response.message());
                 }
-                receiver.send(Activity.RESULT_OK, new Bundle());
+                receiver.send(Activity.RESULT_OK, bundle);
             }
 
             @Override
             public void onFailure(Call<List<Cat>> call, Throwable t) {
                 t.printStackTrace();
+                receiver.send(Activity.RESULT_CANCELED, new Bundle());
             }
         }));
     }
@@ -155,33 +131,77 @@ public class MyIntentService extends IntentService {
             @Override
             public void onResponse(Call<Cat> call, Response<Cat> response) {
                 Cat cat = response.body();
+                Bundle bundle = new Bundle();
                 if (cat != null) {
                     CatContent.setCAT(cat);
                 } else {
-                    CatContent.setResponse(response.message());
+                    bundle.putString("response", response.message());
                 }
-                receiver.send(Activity.RESULT_OK, new Bundle());
+                receiver.send(Activity.RESULT_OK, bundle);
             }
 
             @Override
             public void onFailure(Call<Cat> call, Throwable t) {
                 t.printStackTrace();
+                receiver.send(Activity.RESULT_CANCELED, new Bundle());
             }
         }));
     }
 
     private void create(Cat cat) {
         CatClient catClient = ServiceGenerator.createService(CatClient.class);
-        catClient.create(cat);
+        Call<ResponseBody> responseCall = catClient.create(cat);
+        responseCall.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Bundle bundle = new Bundle();
+                bundle.putString("response", response.message());
+                receiver.send(Activity.RESULT_OK, bundle);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                t.printStackTrace();
+                receiver.send(Activity.RESULT_CANCELED, new Bundle());
+            }
+        });
     }
 
     private void update(Integer id, Cat cat) {
         CatClient catClient = ServiceGenerator.createService(CatClient.class);
-        catClient.update(id, cat);
+        Call<ResponseBody> responseCall = catClient.update(id, cat);
+        responseCall.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Bundle bundle = new Bundle();
+                bundle.putString("response", response.message());
+                receiver.send(Activity.RESULT_OK, bundle);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                t.printStackTrace();
+                receiver.send(Activity.RESULT_CANCELED, new Bundle());
+            }
+        });
     }
 
     private void delete(Integer id) {
         CatClient catClient = ServiceGenerator.createService(CatClient.class);
-        catClient.delete(id);
+        Call<ResponseBody> responseCall = catClient.delete(id);
+        responseCall.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Bundle bundle = new Bundle();
+                bundle.putString("response", response.message());
+                receiver.send(Activity.RESULT_OK, bundle);
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                t.printStackTrace();
+                receiver.send(Activity.RESULT_CANCELED, new Bundle());
+            }
+        });
     }
 }
