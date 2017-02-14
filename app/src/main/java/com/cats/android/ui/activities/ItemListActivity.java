@@ -3,6 +3,8 @@ package com.cats.android.ui.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -20,15 +22,10 @@ import android.widget.Toast;
 import com.cats.android.R;
 import com.cats.android.data.CatContent;
 import com.cats.android.model.Cat;
-import com.cats.android.service.CatClient;
-import com.cats.android.service.ServiceGenerator;
+import com.cats.android.service.MyIntentService;
 import com.cats.android.ui.fragments.ItemDetailFragment;
 
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * An activity representing a list of Items. This activity
@@ -67,7 +64,7 @@ public class ItemListActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        displayAllCats((RecyclerView) recyclerView);
 
         if (findViewById(R.id.item_detail_container) != null) {
             // The detail container view will be present only in the
@@ -89,32 +86,26 @@ public class ItemListActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.reload) {
-            setupRecyclerView((RecyclerView) recyclerView);
+            displayAllCats((RecyclerView) recyclerView);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void setupRecyclerView(final @NonNull RecyclerView recyclerView) {
-        CatClient catClient = ServiceGenerator.createService(CatClient.class);
-        Call<List<Cat>> call = catClient.getAll();
-        call.enqueue((new Callback<List<Cat>>() {
+    private void displayAllCats(final @NonNull RecyclerView recyclerView) {
+        MyIntentService.getAll(this, new ResultReceiver(new Handler()) {
             @Override
-            public void onResponse(Call<List<Cat>> call, Response<List<Cat>> response) {
-                List<Cat> cats = response.body();
-                if (cats != null) {
-                    CatContent.putItems(cats);
-                    recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter());
-                } else {
-                    Toast.makeText(getApplicationContext(), response.message(), Toast.LENGTH_LONG).show();
+            public void onReceiveResult(int resultCode, Bundle resultData) {
+                if (resultCode == RESULT_OK) {
+                    List<Cat> cats = CatContent.getITEMS();
+                    if (cats != null) {
+                        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter());
+                    } else {
+                        Toast.makeText(getApplicationContext(), CatContent.getResponse(), Toast.LENGTH_LONG).show();
+                    }
                 }
             }
-
-            @Override
-            public void onFailure(Call<List<Cat>> call, Throwable t) {
-                t.printStackTrace();
-            }
-        }));
+        });
     }
 
     public class SimpleItemRecyclerViewAdapter

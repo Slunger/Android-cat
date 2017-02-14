@@ -14,6 +14,11 @@ public class CatContent {
 
     private static List<Cat> ITEMS;
 
+    //for @GET("/cats/{id}")
+    private static Cat CAT;
+
+    private static String response;
+
     private static Map<Integer, Cat> ITEM_MAP = new HashMap<Integer, Cat>();
 
     public static void putItems(List<Cat> cats) {
@@ -31,5 +36,21 @@ public class CatContent {
 
     public static Map<Integer, Cat> getItemMap() {
         return ITEM_MAP;
+    }
+
+    public static String getResponse() {
+        return response;
+    }
+
+    public static void setResponse(String response) {
+        CatContent.response = response;
+    }
+
+    public static Cat getCAT() {
+        return CAT;
+    }
+
+    public static void setCAT(Cat CAT) {
+        CatContent.CAT = CAT;
     }
 }

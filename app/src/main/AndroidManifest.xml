@@ -29,6 +29,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.cats.android.ui.activities.ItemListActivity" />
         </activity>
+
+        <service
+            android:name=".service.MyIntentService"
+            android:exported="false" />
+
     </application>
 
 </manifest>
