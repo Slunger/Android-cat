@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.cats.android.R;
+import com.cats.android.service.MyIntentService;
 import com.cats.android.ui.fragments.ItemDetailFragment;
 
 /**
@@ -39,6 +40,23 @@ public class ItemDetailActivity extends AppCompatActivity {
                     public void onReceiveResult(int resultCode, Bundle resultData) {
                         if (resultCode == RESULT_OK) {
                             Toast.makeText(getApplicationContext(), resultData.getString("response"), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }, getIntent().getIntExtra(ItemDetailFragment.ARG_ITEM_ID, 0));
+            }
+        });
+
+
+        FloatingActionButton fabDelete = (FloatingActionButton) findViewById(R.id.fabDelete);
+        fabDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                MyIntentService.delete(view.getContext(), new ResultReceiver(new Handler()) {
+                    @Override
+                    public void onReceiveResult(int resultCode, Bundle resultData) {
+                        if (resultCode == RESULT_OK) {
+                            Toast.makeText(getApplicationContext(), resultData.getString("response"), Toast.LENGTH_LONG).show();
+                            finish();
                         }
                     }
                 }, getIntent().getIntExtra(ItemDetailFragment.ARG_ITEM_ID, 0));

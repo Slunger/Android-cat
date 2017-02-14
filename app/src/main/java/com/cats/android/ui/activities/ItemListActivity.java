@@ -75,9 +75,9 @@ public class ItemListActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.item_list);
         assert recyclerView != null;
 
-        testDataCat();
-
         if (CatContent.getITEMS() == null) {
+//            testDataCat();
+//            setRecyclerView();
             updateRecyclerView();
         } else {
             setRecyclerView();
