@@ -86,7 +86,6 @@ public class MyIntentService extends IntentService {
                 create(cat);
             } else if (UPDATE.equals(action)) {
                 Cat cat = (Cat) i.getSerializableExtra(CAT);
-                create(cat);
                 update(cat.getId(), cat);
             } else if (GET.equals(action)) {
                 Integer id = i.getIntExtra(ID, 0);

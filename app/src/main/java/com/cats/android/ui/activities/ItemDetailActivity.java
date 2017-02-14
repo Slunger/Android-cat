@@ -2,6 +2,8 @@ package com.cats.android.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -32,7 +34,14 @@ public class ItemDetailActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "Edit", Toast.LENGTH_LONG).show();
+                CatAlertDialog.openUpdateCatDialog(view.getContext(), new ResultReceiver(new Handler()) {
+                    @Override
+                    public void onReceiveResult(int resultCode, Bundle resultData) {
+                        if (resultCode == RESULT_OK) {
+                            Toast.makeText(getApplicationContext(), resultData.getString("response"), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }, getIntent().getIntExtra(ItemDetailFragment.ARG_ITEM_ID, 0));
             }
         });
 

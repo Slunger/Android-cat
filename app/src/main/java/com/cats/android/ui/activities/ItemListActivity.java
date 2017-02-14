@@ -60,7 +60,15 @@ public class ItemListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), isNetworkAvailable().toString(), Toast.LENGTH_LONG).show();
+                CatAlertDialog.openCreateCatDialog(view.getContext(), new ResultReceiver(new Handler()) {
+                    @Override
+                    public void onReceiveResult(int resultCode, Bundle resultData) {
+                        if (resultCode == RESULT_OK) {
+                            Toast.makeText(getApplicationContext(), resultData.getString("response"), Toast.LENGTH_LONG).show();
+                            updateRecyclerView();
+                        }
+                    }
+                });
             }
         });
 
@@ -128,17 +136,17 @@ public class ItemListActivity extends AppCompatActivity {
         List<Cat> cats = new ArrayList<>();
         int age = 1, weight = 1;
         int id = 1;
-        Cat cat = new Cat(id++, age++, "white", "Cyprus", "Kitty", weight++);
+        Cat cat = new Cat(id++, "Kitty", age++, "white", "Cyprus", weight++);
         cats.add(cat);
-        cat = new Cat(id++, age++, "lavender", "Sphynx", "Byte", weight++);
+        cat = new Cat(id++, "Byte", age++, "lavender", "Sphynx", weight++);
         cats.add(cat);
-        cat = new Cat(id++, age, "chocolate", "European Shorthair", "Yoda", weight);
+        cat = new Cat(id++, "Yoda", age, "chocolate", "European Shorthair", weight);
         cats.add(cat);
-        cat = new Cat(id++, age++, "tortoiseshell", "Siamese", "Picasso", weight++);
+        cat = new Cat(id++, "Picasso", age++, "tortoiseshell", "Siamese", weight++);
         cats.add(cat);
-        cat = new Cat(id++, age++, "black", "Exotic Shorthair", "Lancelot", weight++);
+        cat = new Cat(id++, "Lancelot", age++, "black", "Exotic Shorthair", weight++);
         cats.add(cat);
-        cat = new Cat(id++, age, "chocolate", "Asian", "eEwok", weight);
+        cat = new Cat(id++, "eEwok", age, "chocolate", "Asian", weight);
         cats.add(cat);
         CatContent.putItems(cats);
     }

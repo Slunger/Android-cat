@@ -23,7 +23,7 @@ public class Cat implements Serializable {
 
     private int weight;
 
-    public Cat(Integer id, int age, String color, String breed, String name, int weight) {
+    public Cat(Integer id, String name, int age, String color, String breed, int weight) {
         this.id = id;
         this.age = age;
         this.color = color;
@@ -32,7 +32,7 @@ public class Cat implements Serializable {
         this.weight = weight;
     }
 
-    public Cat(int age, String color, String breed, String name, int weight) {
+    public Cat(String name, int age, String color, String breed, int weight) {
         this.age = age;
         this.color = color;
         this.breed = breed;
