@@ -8,6 +8,8 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -33,4 +35,11 @@ public interface CatClient {
 
     @DELETE("/cats/{id}")
     Call<ResponseBody> delete(@Path("id") Integer id);
+
+    @FormUrlEncoded
+    @POST("/oauth/token")
+    Call<ResponseBody> getAccessToken(
+            @Field("code") String code,
+            @Field("grant_type") String grantType,
+            @Field("redirect_uri") String redirect);
 }
