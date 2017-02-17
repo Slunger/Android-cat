@@ -1,6 +1,8 @@
 package com.cats.android.service;
 
 import android.text.TextUtils;
+
+import com.cats.android.model.AuthenticationInterceptor;
 import com.cats.android.util.WebManager;
 import okhttp3.Credentials;
 import okhttp3.OkHttpClient;

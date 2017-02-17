@@ -2,20 +2,17 @@ package com.cats.android.ui.activities;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Bundle;
-import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cats.android.R;
 import com.cats.android.data.CatContent;
 import com.cats.android.model.Cat;
-import com.cats.android.service.MyIntentService;
+import com.cats.android.util.WebManager;
 
 /**
  * Created by andrey on 14.02.17.
@@ -45,7 +42,7 @@ public final class CatAlertDialog {
                 .setCancelable(false)
                 .setPositiveButton("Create", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogBox, int id) {
-                        MyIntentService.create(context, receiver,
+                        WebManager.create(context, receiver,
                                 new Cat(nameEditText.getText().toString(),
                                         Integer.parseInt(ageEditText.getText().toString()),
                                         colorEditText.getText().toString(),
@@ -98,7 +95,7 @@ public final class CatAlertDialog {
                 .setCancelable(false)
                 .setPositiveButton("Update", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogBox, int id) {
-                        MyIntentService.update(context, receiver,
+                        WebManager.update(context, receiver,
                                 new Cat(cat.getId(), nameEditText.getText().toString(),
                                         Integer.parseInt(ageEditText.getText().toString()),
                                         colorEditText.getText().toString(),

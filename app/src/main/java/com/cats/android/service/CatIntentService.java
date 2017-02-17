@@ -8,6 +8,7 @@ import android.os.ResultReceiver;
 import com.cats.android.data.CatContent;
 import com.cats.android.model.AccessToken;
 import com.cats.android.model.Cat;
+import com.cats.android.util.WebManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;

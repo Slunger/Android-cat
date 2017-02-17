@@ -13,7 +13,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.cats.android.R;
-import com.cats.android.service.MyIntentService;
+import com.cats.android.util.WebManager;
 import com.cats.android.ui.fragments.ItemDetailFragment;
 
 /**
@@ -51,7 +51,7 @@ public class ItemDetailActivity extends AppCompatActivity {
         fabDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                MyIntentService.delete(view.getContext(), new ResultReceiver(new Handler()) {
+                WebManager.delete(view.getContext(), new ResultReceiver(new Handler()) {
                     @Override
                     public void onReceiveResult(int resultCode, Bundle resultData) {
                         if (resultCode == RESULT_OK) {

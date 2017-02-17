@@ -1,4 +1,4 @@
-package com.cats.android.service;
+package com.cats.android.model;
 
 import java.io.IOException;
 

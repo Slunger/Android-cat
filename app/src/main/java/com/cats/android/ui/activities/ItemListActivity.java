@@ -2,8 +2,6 @@ package com.cats.android.ui.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -19,14 +17,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.cats.android.R;
 import com.cats.android.data.CatContent;
 import com.cats.android.model.Cat;
-import com.cats.android.service.MyIntentService;
+import com.cats.android.util.WebManager;
 import com.cats.android.ui.fragments.ItemDetailFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -76,8 +72,6 @@ public class ItemListActivity extends AppCompatActivity {
         assert recyclerView != null;
 
         if (CatContent.getITEMS() == null) {
-//            testDataCat();
-//            setRecyclerView();
             updateRecyclerView();
         } else {
             setRecyclerView();
@@ -90,13 +84,6 @@ public class ItemListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
-    }
-
-    private Boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
     }
 
     @Override
@@ -117,7 +104,7 @@ public class ItemListActivity extends AppCompatActivity {
     }
 
     private void updateRecyclerView() {
-        MyIntentService.getAll(this, new ResultReceiver(new Handler()) {
+        WebManager.getAll(this, new ResultReceiver(new Handler()) {
             @Override
             public void onReceiveResult(int resultCode, Bundle resultData) {
                 if (resultCode == RESULT_OK) {
@@ -130,25 +117,6 @@ public class ItemListActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    private void testDataCat() {
-        List<Cat> cats = new ArrayList<>();
-        int age = 1, weight = 1;
-        int id = 1;
-        Cat cat = new Cat(id++, "Kitty", age++, "white", "Cyprus", weight++);
-        cats.add(cat);
-        cat = new Cat(id++, "Byte", age++, "lavender", "Sphynx", weight++);
-        cats.add(cat);
-        cat = new Cat(id++, "Yoda", age, "chocolate", "European Shorthair", weight);
-        cats.add(cat);
-        cat = new Cat(id++, "Picasso", age++, "tortoiseshell", "Siamese", weight++);
-        cats.add(cat);
-        cat = new Cat(id++, "Lancelot", age++, "black", "Exotic Shorthair", weight++);
-        cats.add(cat);
-        cat = new Cat(id++, "eEwok", age, "chocolate", "Asian", weight);
-        cats.add(cat);
-        CatContent.putItems(cats);
     }
 
     private void setRecyclerView() {
