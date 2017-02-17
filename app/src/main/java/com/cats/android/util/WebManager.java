@@ -1,4 +1,4 @@
-package com.cats.android.service;
+package com.cats.android.util;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.ResultReceiver;
 import com.cats.android.model.AccessToken;
 import com.cats.android.model.Cat;
+import com.cats.android.service.CatIntentService;
+
 import okhttp3.HttpUrl;
 
 import static com.cats.android.util.Constants.*;
