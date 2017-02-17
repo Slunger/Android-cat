@@ -3,72 +3,26 @@ package com.cats.android.service;
 import android.app.Activity;
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.ResultReceiver;
-
 import com.cats.android.data.CatContent;
+import com.cats.android.model.AccessToken;
 import com.cats.android.model.Cat;
-
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.io.IOException;
 import java.util.List;
-
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MyIntentService extends IntentService {
+import static com.cats.android.util.Constants.*;
 
-    private static final String GET_ALL = "get_all";
-    private static final String CREATE = "create";
-    private static final String UPDATE = "update";
-    private static final String GET = "get";
-    private static final String DELETE = "delete";
+public class CatIntentService extends IntentService {
 
-    private static final String ID = "id";
-    private static final String CAT = "cat";
-
-    public MyIntentService() {
-        super("MyIntentService");
-    }
-
-    public static void getAll(Context context, ResultReceiver rec) {
-        Intent intent = new Intent(context, MyIntentService.class);
-        intent.setAction(GET_ALL);
-        intent.putExtra("receiver", rec);
-        context.startService(intent);
-    }
-
-    public static void create(Context context, ResultReceiver rec, Cat cat) {
-        Intent intent = new Intent(context, MyIntentService.class);
-        intent.setAction(CREATE);
-        intent.putExtra(CAT, cat);
-        intent.putExtra("receiver", rec);
-        context.startService(intent);
-    }
-
-    public static void update(Context context, ResultReceiver rec, Cat cat) {
-        Intent intent = new Intent(context, MyIntentService.class);
-        intent.setAction(UPDATE);
-        intent.putExtra(CAT, cat);
-        intent.putExtra("receiver", rec);
-        context.startService(intent);
-    }
-
-    public static void get(Context context, ResultReceiver rec, Integer id) {
-        Intent intent = new Intent(context, MyIntentService.class);
-        intent.setAction(GET);
-        intent.putExtra(ID, id);
-        intent.putExtra("receiver", rec);
-        context.startService(intent);
-    }
-
-    public static void delete(Context context, ResultReceiver rec, Integer id) {
-        Intent intent = new Intent(context, MyIntentService.class);
-        intent.setAction(DELETE);
-        intent.putExtra(ID, id);
-        intent.putExtra("receiver", rec);
-        context.startService(intent);
+    public CatIntentService() {
+        super("CatIntentService");
     }
 
     private ResultReceiver receiver;
@@ -93,6 +47,8 @@ public class MyIntentService extends IntentService {
             } else if (DELETE.equals(action)) {
                 Integer id = i.getIntExtra(ID, 0);
                 delete(id);
+            } else if ("getAccessToken".equals(action)) {
+                getAccessToken(i.getStringExtra("code"));
             } else {
                 return;
             }
@@ -202,5 +158,38 @@ public class MyIntentService extends IntentService {
                 receiver.send(Activity.RESULT_CANCELED, new Bundle());
             }
         });
+    }
+
+    private void getAccessToken(String code) {
+        CatClient loginService =
+                ServiceGenerator.createService(CatClient.class, CLIENT_ID, CLIENT_SECRET);
+        Call<ResponseBody> call = loginService.getAccessToken(code, "authorization_code", REDIRECT_URI);
+        call.enqueue((new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    JSONObject object = new JSONObject(response.body().string());
+                    WebManager.accessToken = new AccessToken(Long.parseLong(object.getString("expires_in")), object.getString("token_type"),
+                            object.getString("access_token"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (WebManager.accessToken != null) {
+                    Bundle bundle = new Bundle();
+                    receiver.send(Activity.RESULT_OK, bundle);
+                } else {
+                    Bundle bundle = new Bundle();
+                    receiver.send(Activity.RESULT_CANCELED, bundle);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                t.printStackTrace();
+                receiver.send(Activity.RESULT_CANCELED, new Bundle());
+            }
+        }));
     }
 }
