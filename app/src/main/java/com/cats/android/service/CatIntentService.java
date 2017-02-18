@@ -5,14 +5,18 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
-import com.cats.android.data.CatContent;
+
+import com.cats.android.repository.CatRepository;
 import com.cats.android.model.AccessToken;
 import com.cats.android.model.Cat;
 import com.cats.android.util.WebManager;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.List;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,7 +36,8 @@ public class CatIntentService extends IntentService {
     protected void onHandleIntent(Intent i) {
         if (i != null) {
             // Extract the receiver passed into the service
-            receiver = i.getParcelableExtra("receiver");
+            receiver = i.getParcelableExtra(RECEIVER);
+
             final String action = i.getAction();
             if (GET_ALL.equals(action)) {
                 getAll();
@@ -48,8 +53,8 @@ public class CatIntentService extends IntentService {
             } else if (DELETE.equals(action)) {
                 Integer id = i.getIntExtra(ID, 0);
                 delete(id);
-            } else if ("getAccessToken".equals(action)) {
-                getAccessToken(i.getStringExtra("code"));
+            } else if (GET_TOKEN.equals(action)) {
+                getAccessToken(i.getStringExtra(CODE));
             } else {
                 return;
             }
@@ -65,9 +70,9 @@ public class CatIntentService extends IntentService {
                 List<Cat> cats = response.body();
                 Bundle bundle = new Bundle();
                 if (cats != null) {
-                    CatContent.putItems(cats);
+                    CatRepository.putItems(cats);
                 } else {
-                    bundle.putString("response", response.message());
+                    bundle.putString(RESPONSE, response.message());
                 }
                 receiver.send(Activity.RESULT_OK, bundle);
             }
@@ -89,9 +94,9 @@ public class CatIntentService extends IntentService {
                 Cat cat = response.body();
                 Bundle bundle = new Bundle();
                 if (cat != null) {
-                    CatContent.setCAT(cat);
+                    CatRepository.setCAT(cat);
                 } else {
-                    bundle.putString("response", response.message());
+                    bundle.putString(RESPONSE, response.message());
                 }
                 receiver.send(Activity.RESULT_OK, bundle);
             }
@@ -107,49 +112,27 @@ public class CatIntentService extends IntentService {
     private void create(Cat cat) {
         CatClient catClient = ServiceGenerator.createService(CatClient.class);
         Call<ResponseBody> responseCall = catClient.create(cat);
-        responseCall.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Bundle bundle = new Bundle();
-                bundle.putString("response", response.message());
-                receiver.send(Activity.RESULT_OK, bundle);
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                t.printStackTrace();
-                receiver.send(Activity.RESULT_CANCELED, new Bundle());
-            }
-        });
+        responseCall.enqueue(receiveResponseMessage());
     }
 
     private void update(Integer id, Cat cat) {
         CatClient catClient = ServiceGenerator.createService(CatClient.class);
         Call<ResponseBody> responseCall = catClient.update(id, cat);
-        responseCall.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                Bundle bundle = new Bundle();
-                bundle.putString("response", response.message());
-                receiver.send(Activity.RESULT_OK, bundle);
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                t.printStackTrace();
-                receiver.send(Activity.RESULT_CANCELED, new Bundle());
-            }
-        });
+        responseCall.enqueue(receiveResponseMessage());
     }
 
     private void delete(Integer id) {
         CatClient catClient = ServiceGenerator.createService(CatClient.class);
         Call<ResponseBody> responseCall = catClient.delete(id);
-        responseCall.enqueue(new Callback<ResponseBody>() {
+        responseCall.enqueue(receiveResponseMessage());
+    }
+
+    private Callback<ResponseBody> receiveResponseMessage() {
+        return new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 Bundle bundle = new Bundle();
-                bundle.putString("response", response.message());
+                bundle.putString(RESPONSE, response.message());
                 receiver.send(Activity.RESULT_OK, bundle);
             }
 
@@ -158,7 +141,7 @@ public class CatIntentService extends IntentService {
                 t.printStackTrace();
                 receiver.send(Activity.RESULT_CANCELED, new Bundle());
             }
-        });
+        };
     }
 
     private void getAccessToken(String code) {

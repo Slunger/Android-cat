@@ -16,6 +16,8 @@ import com.cats.android.R;
 import com.cats.android.util.WebManager;
 import com.cats.android.ui.fragments.ItemDetailFragment;
 
+import static com.cats.android.util.Constants.RESPONSE;
+
 /**
  * An activity representing a single Item detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
@@ -39,7 +41,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                     @Override
                     public void onReceiveResult(int resultCode, Bundle resultData) {
                         if (resultCode == RESULT_OK) {
-                            Toast.makeText(getApplicationContext(), resultData.getString("response"), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), resultData.getString(RESPONSE), Toast.LENGTH_LONG).show();
                         }
                     }
                 }, getIntent().getIntExtra(ItemDetailFragment.ARG_ITEM_ID, 0));
@@ -55,7 +57,7 @@ public class ItemDetailActivity extends AppCompatActivity {
                     @Override
                     public void onReceiveResult(int resultCode, Bundle resultData) {
                         if (resultCode == RESULT_OK) {
-                            Toast.makeText(getApplicationContext(), resultData.getString("response"), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), resultData.getString(RESPONSE), Toast.LENGTH_LONG).show();
                             finish();
                         }
                     }

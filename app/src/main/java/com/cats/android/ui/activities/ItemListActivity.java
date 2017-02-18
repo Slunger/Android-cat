@@ -18,12 +18,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cats.android.R;
-import com.cats.android.data.CatContent;
+import com.cats.android.repository.CatRepository;
 import com.cats.android.model.Cat;
 import com.cats.android.util.WebManager;
 import com.cats.android.ui.fragments.ItemDetailFragment;
 
 import java.util.List;
+
+import static com.cats.android.util.Constants.RESPONSE;
 
 /**
  * An activity representing a list of Items. This activity
@@ -60,7 +62,7 @@ public class ItemListActivity extends AppCompatActivity {
                     @Override
                     public void onReceiveResult(int resultCode, Bundle resultData) {
                         if (resultCode == RESULT_OK) {
-                            Toast.makeText(getApplicationContext(), resultData.getString("response"), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), resultData.getString(RESPONSE), Toast.LENGTH_LONG).show();
                             updateRecyclerView();
                         }
                     }
@@ -71,7 +73,7 @@ public class ItemListActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.item_list);
         assert recyclerView != null;
 
-        if (CatContent.getITEMS() == null) {
+        if (CatRepository.getITEMS() == null) {
             updateRecyclerView();
         } else {
             setRecyclerView();
@@ -108,11 +110,11 @@ public class ItemListActivity extends AppCompatActivity {
             @Override
             public void onReceiveResult(int resultCode, Bundle resultData) {
                 if (resultCode == RESULT_OK) {
-                    List<Cat> cats = CatContent.getITEMS();
+                    List<Cat> cats = CatRepository.getITEMS();
                     if (cats != null) {
                         setRecyclerView();
                     } else {
-                        Toast.makeText(getApplicationContext(), resultData.getString("response"), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), resultData.getString(RESPONSE), Toast.LENGTH_LONG).show();
                     }
                 }
             }
@@ -129,7 +131,7 @@ public class ItemListActivity extends AppCompatActivity {
         private final List<Cat> catList;
 
         public SimpleItemRecyclerViewAdapter() {
-            catList = CatContent.getITEMS();
+            catList = CatRepository.getITEMS();
         }
 
         @Override

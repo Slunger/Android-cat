@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.cats.android.R;
-import com.cats.android.data.CatContent;
+import com.cats.android.repository.CatRepository;
 import com.cats.android.model.Cat;
 import com.cats.android.util.WebManager;
 
@@ -24,83 +24,63 @@ public final class CatAlertDialog {
     }
 
     public static void openCreateCatDialog(final Context context, final ResultReceiver receiver) {
-        LayoutInflater layoutInflaterAndroid = LayoutInflater.from(context);
-        View mView = layoutInflaterAndroid.inflate(R.layout.dialog_box, null);
-        AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(context);
-        alertDialogBuilderUserInput.setView(mView);
-
-        final TextView titleTextView = (TextView) mView.findViewById(R.id.dialogTitle);
-        titleTextView.setText("Create Cat");
-
-        final EditText nameEditText = (EditText) mView.findViewById(R.id.nameEditText);
-        final EditText ageEditText = (EditText) mView.findViewById(R.id.ageEditText);
-        final EditText colorEditText = (EditText) mView.findViewById(R.id.colorEditText);
-        final EditText breedEditText = (EditText) mView.findViewById(R.id.breedEditText);
-        final EditText weightEditText = (EditText) mView.findViewById(R.id.weightEditText);
-
-        alertDialogBuilderUserInput
-                .setCancelable(false)
-                .setPositiveButton("Create", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialogBox, int id) {
-                        WebManager.create(context, receiver,
-                                new Cat(nameEditText.getText().toString(),
-                                        Integer.parseInt(ageEditText.getText().toString()),
-                                        colorEditText.getText().toString(),
-                                        breedEditText.getText().toString(),
-                                        Integer.parseInt(weightEditText.getText().toString())));
-                    }
-                })
-
-                .setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialogBox, int id) {
-                                dialogBox.cancel();
-                            }
-                        });
-
-        AlertDialog alertDialogAndroid = alertDialogBuilderUserInput.create();
-        alertDialogAndroid.show();
+        openCatDialog(context, receiver, null);
     }
 
-
     public static void openUpdateCatDialog(final Context context, final ResultReceiver receiver, Integer id) {
-        final Cat cat = CatContent.getItemMap().get(id);
+        final Cat cat = CatRepository.getItemMap().get(id);
         if (cat == null) {
             return;
         }
+        openCatDialog(context, receiver, cat);
+    }
+
+    private static void openCatDialog(final Context context, final ResultReceiver receiver, final Cat cat) {
+        final String action;
         LayoutInflater layoutInflaterAndroid = LayoutInflater.from(context);
         View mView = layoutInflaterAndroid.inflate(R.layout.dialog_box, null);
         AlertDialog.Builder alertDialogBuilderUserInput = new AlertDialog.Builder(context);
         alertDialogBuilderUserInput.setView(mView);
 
         final TextView titleTextView = (TextView) mView.findViewById(R.id.dialogTitle);
-        titleTextView.setText("Update Cat");
-
         final EditText nameEditText = (EditText) mView.findViewById(R.id.nameEditText);
-        nameEditText.setText(cat.getName());
-
         final EditText ageEditText = (EditText) mView.findViewById(R.id.ageEditText);
-        ageEditText.setText(""+cat.getAge());
-
         final EditText colorEditText = (EditText) mView.findViewById(R.id.colorEditText);
-        colorEditText.setText(cat.getColor());
-
         final EditText breedEditText = (EditText) mView.findViewById(R.id.breedEditText);
-        breedEditText.setText(cat.getBreed());
-
         final EditText weightEditText = (EditText) mView.findViewById(R.id.weightEditText);
-        weightEditText.setText(""+cat.getWeight());
+
+        if (cat == null) {
+            action = "Create";
+        } else {
+            action = "Update";
+            nameEditText.setText(cat.getName());
+            ageEditText.setText("" + cat.getAge());
+            colorEditText.setText(cat.getColor());
+            breedEditText.setText(cat.getBreed());
+            weightEditText.setText("" + cat.getWeight());
+        }
+        titleTextView.setText(action + " Cat");
 
         alertDialogBuilderUserInput
                 .setCancelable(false)
-                .setPositiveButton("Update", new DialogInterface.OnClickListener() {
+                .setPositiveButton(action, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialogBox, int id) {
-                        WebManager.update(context, receiver,
-                                new Cat(cat.getId(), nameEditText.getText().toString(),
-                                        Integer.parseInt(ageEditText.getText().toString()),
-                                        colorEditText.getText().toString(),
-                                        breedEditText.getText().toString(),
-                                        Integer.parseInt(weightEditText.getText().toString())));
+                        Cat editCat;
+                        if (cat != null) {
+                            editCat = new Cat(cat.getId(), nameEditText.getText().toString(),
+                                    Integer.parseInt(ageEditText.getText().toString()),
+                                    colorEditText.getText().toString(),
+                                    breedEditText.getText().toString(),
+                                    Integer.parseInt(weightEditText.getText().toString()));
+                            WebManager.update(context, receiver, editCat);
+                        } else {
+                            editCat = new Cat(nameEditText.getText().toString(),
+                                    Integer.parseInt(ageEditText.getText().toString()),
+                                    colorEditText.getText().toString(),
+                                    breedEditText.getText().toString(),
+                                    Integer.parseInt(weightEditText.getText().toString()));
+                            WebManager.create(context, receiver, editCat);
+                        }
                     }
                 })
 

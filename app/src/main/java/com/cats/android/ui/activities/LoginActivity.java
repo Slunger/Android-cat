@@ -17,6 +17,8 @@ import com.cats.android.R;
 import com.cats.android.util.WebManager;
 import com.cats.android.util.Constants;
 
+import static com.cats.android.util.Constants.CODE;
+
 /**
  * Created by andrey on 16.02.17.
  */
@@ -46,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
         Uri uri = getIntent().getData();
         if (WebManager.accessToken == null || WebManager.accessToken.isExpired()) {
             if (uri != null && uri.toString().startsWith(Constants.REDIRECT_URI)) {
-                String code = uri.getQueryParameter("code");
+                String code = uri.getQueryParameter(CODE);
                 if (code != null) {
                     WebManager.getAccessToken(this, new ResultReceiver(new Handler()) {
                         @Override

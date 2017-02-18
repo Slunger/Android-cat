@@ -1,4 +1,4 @@
-package com.cats.android.data;
+package com.cats.android.repository;
 
 import com.cats.android.model.Cat;
 
@@ -10,7 +10,7 @@ import java.util.Map;
  * Created by andrey on 13.02.17.
  */
 
-public class CatContent {
+public class CatRepository {
 
     private static List<Cat> ITEMS;
 
@@ -41,6 +41,6 @@ public class CatContent {
     }
 
     public static void setCAT(Cat CAT) {
-        CatContent.CAT = CAT;
+        CatRepository.CAT = CAT;
     }
 }

@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.cats.android.R;
-import com.cats.android.data.CatContent;
+import com.cats.android.repository.CatRepository;
 import com.cats.android.model.Cat;
 import com.cats.android.ui.activities.ItemDetailActivity;
 import com.cats.android.ui.activities.ItemListActivity;
@@ -36,7 +36,7 @@ public class ItemDetailFragment extends Fragment {
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
 
-            cat = CatContent.getItemMap().get(getArguments().getInt(ARG_ITEM_ID));
+            cat = CatRepository.getItemMap().get(getArguments().getInt(ARG_ITEM_ID));
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
