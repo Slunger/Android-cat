@@ -146,21 +146,21 @@ public class CatIntentService extends IntentService {
 
     private void getAccessToken(String code) {
         CatClient loginService =
-                ServiceGenerator.createService(CatClient.class, CLIENT_ID, CLIENT_SECRET);
+                ServiceGenerator.createService(CatClient.class);
         Call<ResponseBody> call = loginService.getAccessToken(code, "authorization_code", REDIRECT_URI);
         call.enqueue((new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
                     JSONObject object = new JSONObject(response.body().string());
-                    WebManager.accessToken = new AccessToken(Long.parseLong(object.getString("expires_in")), object.getString("token_type"),
-                            object.getString("access_token"));
+                    WebManager.setAccessToken(new AccessToken(Long.parseLong(object.getString("expires_in")), object.getString("token_type"),
+                            object.getString("access_token")));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                if (WebManager.accessToken != null) {
+                if (WebManager.getAccessToken() != null) {
                     Bundle bundle = new Bundle();
                     receiver.send(Activity.RESULT_OK, bundle);
                 } else {

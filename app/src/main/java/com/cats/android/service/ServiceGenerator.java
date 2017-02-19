@@ -1,10 +1,7 @@
 package com.cats.android.service;
 
-import android.text.TextUtils;
+import com.cats.android.model.SessionInterceptor;
 
-import com.cats.android.model.AuthenticationInterceptor;
-import com.cats.android.util.WebManager;
-import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -33,31 +30,11 @@ public class ServiceGenerator {
                     .setLevel(HttpLoggingInterceptor.Level.BODY);
 
     public static <S> S createService(
-            Class<S> serviceClass, String clientId, String clientSecret) {
-        if (!TextUtils.isEmpty(clientId)
-                && !TextUtils.isEmpty(clientSecret)) {
-            AuthenticationInterceptor interceptor =
-                    new AuthenticationInterceptor(Credentials.basic(clientId, clientSecret));
-
-            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-
-            httpClient.addInterceptor(interceptor);
-            httpClient.addInterceptor(logging);
-            builder.client(httpClient.build());
-            retrofit = builder.build();
-            return retrofit.create(serviceClass);
-        }
-
-        return createService(serviceClass);
-    }
-
-    public static <S> S createService(
             Class<S> serviceClass) {
 
         if (!httpClient.interceptors().contains(logging)) {
-            AuthenticationInterceptor interceptor =
-                    new AuthenticationInterceptor(WebManager.accessToken.getTokenType()
-                            + " " + WebManager.accessToken.getAccessToken());
+            SessionInterceptor interceptor =
+                    new SessionInterceptor();
 
             httpClient.addInterceptor(interceptor);
             httpClient.addInterceptor(logging);

@@ -19,7 +19,7 @@ import static com.cats.android.util.Constants.*;
 
 public final class WebManager {
 
-    public static AccessToken accessToken;
+    private static AccessToken accessToken;
 
     private WebManager() {
     }
@@ -71,5 +71,13 @@ public final class WebManager {
                     Intent.ACTION_VIEW,
                     Uri.parse(authorizeUrl.toString())));
         }
+    }
+
+    public static AccessToken getAccessToken() {
+        return accessToken;
+    }
+
+    public static void setAccessToken(AccessToken accessToken) {
+        WebManager.accessToken = accessToken;
     }
 }

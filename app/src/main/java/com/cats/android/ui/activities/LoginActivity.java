@@ -46,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Uri uri = getIntent().getData();
-        if (WebManager.accessToken == null || WebManager.accessToken.isExpired()) {
+        if (WebManager.getAccessToken() == null || WebManager.getAccessToken().isExpired()) {
             if (uri != null && uri.toString().startsWith(Constants.REDIRECT_URI)) {
                 String code = uri.getQueryParameter(CODE);
                 if (code != null) {
