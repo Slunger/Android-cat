@@ -63,7 +63,7 @@ public class ItemListActivity extends AppCompatActivity {
                     public void onReceiveResult(int resultCode, Bundle resultData) {
                         if (resultCode == RESULT_OK) {
                             Toast.makeText(getApplicationContext(), resultData.getString(RESPONSE), Toast.LENGTH_LONG).show();
-                            updateRecyclerView();
+                            updateCatRepository();
                         }
                     }
                 });
@@ -74,9 +74,9 @@ public class ItemListActivity extends AppCompatActivity {
         assert recyclerView != null;
 
         if (CatRepository.getITEMS() == null) {
-            updateRecyclerView();
+            updateCatRepository();
         } else {
-            setRecyclerView();
+            refreshRecyclerView();
         }
 
         if (findViewById(R.id.item_detail_container) != null) {
@@ -99,20 +99,20 @@ public class ItemListActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.reload) {
-            updateRecyclerView();
+            updateCatRepository();
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void updateRecyclerView() {
+    private void updateCatRepository() {
         WebManager.getAll(this, new ResultReceiver(new Handler()) {
             @Override
             public void onReceiveResult(int resultCode, Bundle resultData) {
                 if (resultCode == RESULT_OK) {
                     List<Cat> cats = CatRepository.getITEMS();
                     if (cats != null) {
-                        setRecyclerView();
+                        refreshRecyclerView();
                     } else {
                         Toast.makeText(getApplicationContext(), resultData.getString(RESPONSE), Toast.LENGTH_LONG).show();
                     }
@@ -121,14 +121,19 @@ public class ItemListActivity extends AppCompatActivity {
         });
     }
 
-    private void setRecyclerView() {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter());
+    private void refreshRecyclerView() {
+        if (recyclerView.getAdapter() == null) {
+            recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter());
+        } else {
+            ((SimpleItemRecyclerViewAdapter) recyclerView.getAdapter()).setCatList(CatRepository.getITEMS());
+            recyclerView.getAdapter().notifyDataSetChanged();
+        }
     }
 
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<Cat> catList;
+        private List<Cat> catList;
 
         public SimpleItemRecyclerViewAdapter() {
             catList = CatRepository.getITEMS();
@@ -167,6 +172,10 @@ public class ItemListActivity extends AppCompatActivity {
                     }
                 }
             });
+        }
+
+        public void setCatList(List<Cat> catList) {
+            this.catList = catList;
         }
 
         @Override
