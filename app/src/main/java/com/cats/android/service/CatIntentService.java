@@ -11,10 +11,6 @@ import com.cats.android.model.AccessToken;
 import com.cats.android.model.Cat;
 import com.cats.android.util.WebManager;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -147,19 +143,11 @@ public class CatIntentService extends IntentService {
     private void getAccessToken(String code) {
         CatClient loginService =
                 ServiceGenerator.createService(CatClient.class);
-        Call<ResponseBody> call = loginService.getAccessToken(code, "authorization_code", REDIRECT_URI);
-        call.enqueue((new Callback<ResponseBody>() {
+        Call<AccessToken> call = loginService.getAccessToken(code, "authorization_code", REDIRECT_URI);
+        call.enqueue((new Callback<AccessToken>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    JSONObject object = new JSONObject(response.body().string());
-                    WebManager.setAccessToken(new AccessToken(Long.parseLong(object.getString("expires_in")), object.getString("token_type"),
-                            object.getString("access_token")));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            public void onResponse(Call<AccessToken> call, Response<AccessToken> response) {
+                WebManager.setAccessToken(response.body());
                 if (WebManager.getAccessToken() != null) {
                     Bundle bundle = new Bundle();
                     receiver.send(Activity.RESULT_OK, bundle);
@@ -170,7 +158,7 @@ public class CatIntentService extends IntentService {
             }
 
             @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
+            public void onFailure(Call<AccessToken> call, Throwable t) {
                 t.printStackTrace();
                 receiver.send(Activity.RESULT_CANCELED, new Bundle());
             }

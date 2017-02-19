@@ -1,5 +1,6 @@
 package com.cats.android.service;
 
+import com.cats.android.model.AccessToken;
 import com.cats.android.model.Cat;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public interface CatClient {
 
     @FormUrlEncoded
     @POST("/oauth/token")
-    Call<ResponseBody> getAccessToken(
+    Call<AccessToken> getAccessToken(
             @Field("code") String code,
             @Field("grant_type") String grantType,
             @Field("redirect_uri") String redirect);

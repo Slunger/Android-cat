@@ -1,21 +1,27 @@
 package com.cats.android.model;
 
+import com.google.gson.annotations.SerializedName;
+
+import org.parceler.Parcel;
+
 /**
  * Created by andrey on 15.02.17.
  */
-
+@Parcel
 public class AccessToken {
 
+    @SerializedName("expires_in")
     private Long expiresIn;
+
     private Long expiresAt;
+
+    @SerializedName("token_type")
     private String tokenType;
+
+    @SerializedName("access_token")
     private String accessToken;
 
-    public AccessToken(Long expiresIn, String tokenType, String accessToken) {
-        this.expiresIn = expiresIn;
-        this.tokenType = tokenType;
-        this.accessToken = accessToken;
-        this.expiresAt = (expiresIn * 1000) + System.currentTimeMillis();
+    public AccessToken() {
     }
 
     public Long getExpiresIn() {
@@ -23,6 +29,9 @@ public class AccessToken {
     }
 
     public Long getExpiresAt() {
+        if (expiresAt == null) {
+            this.expiresAt = (expiresIn * 1000) + System.currentTimeMillis();
+        }
         return expiresAt;
     }
 
