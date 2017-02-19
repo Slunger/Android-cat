@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.cats.android.R;
 import com.cats.android.util.WebManager;
 import com.cats.android.ui.fragments.ItemDetailFragment;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import static com.cats.android.util.Constants.RESPONSE;
 
@@ -26,12 +27,20 @@ import static com.cats.android.util.Constants.RESPONSE;
  */
 public class ItemDetailActivity extends AppCompatActivity {
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
+    private int itemId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        itemId = getIntent().getIntExtra(ItemDetailFragment.ARG_ITEM_ID, 0);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -42,9 +51,10 @@ public class ItemDetailActivity extends AppCompatActivity {
                     public void onReceiveResult(int resultCode, Bundle resultData) {
                         if (resultCode == RESULT_OK) {
                             Toast.makeText(getApplicationContext(), resultData.getString(RESPONSE), Toast.LENGTH_LONG).show();
+                            recordChangeItem();
                         }
                     }
-                }, getIntent().getIntExtra(ItemDetailFragment.ARG_ITEM_ID, 0));
+                }, itemId);
             }
         });
 
@@ -58,10 +68,11 @@ public class ItemDetailActivity extends AppCompatActivity {
                     public void onReceiveResult(int resultCode, Bundle resultData) {
                         if (resultCode == RESULT_OK) {
                             Toast.makeText(getApplicationContext(), resultData.getString(RESPONSE), Toast.LENGTH_LONG).show();
+                            recordDeletedItem();
                             finish();
                         }
                     }
-                }, getIntent().getIntExtra(ItemDetailFragment.ARG_ITEM_ID, 0));
+                }, itemId);
             }
         });
 
@@ -83,14 +94,29 @@ public class ItemDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putInt(ItemDetailFragment.ARG_ITEM_ID,
-                    getIntent().getIntExtra(ItemDetailFragment.ARG_ITEM_ID, 0));
+            arguments.putInt(ItemDetailFragment.ARG_ITEM_ID, itemId);
             ItemDetailFragment fragment = new ItemDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.item_detail_container, fragment)
                     .commit();
         }
+
+        Bundle bundle = new Bundle();
+        bundle.putInt(FirebaseAnalytics.Param.ITEM_ID, itemId);
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
+    }
+
+    private void recordDeletedItem() {
+        Bundle bundle = new Bundle();
+        bundle.putInt(FirebaseAnalytics.Param.ITEM_ID, itemId);
+        mFirebaseAnalytics.logEvent("deleted_item", bundle);
+    }
+
+    private void recordChangeItem() {
+        Bundle bundle = new Bundle();
+        bundle.putInt(FirebaseAnalytics.Param.ITEM_ID, itemId);
+        mFirebaseAnalytics.logEvent("changed_item", bundle);
     }
 
     @Override

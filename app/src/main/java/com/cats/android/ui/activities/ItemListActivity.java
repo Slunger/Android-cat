@@ -22,6 +22,7 @@ import com.cats.android.repository.CatRepository;
 import com.cats.android.model.Cat;
 import com.cats.android.util.WebManager;
 import com.cats.android.ui.fragments.ItemDetailFragment;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.List;
 
@@ -45,6 +46,8 @@ public class ItemListActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
 
+    private FirebaseAnalytics mFirebaseAnalytics;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +56,8 @@ public class ItemListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -63,6 +68,7 @@ public class ItemListActivity extends AppCompatActivity {
                     public void onReceiveResult(int resultCode, Bundle resultData) {
                         if (resultCode == RESULT_OK) {
                             Toast.makeText(getApplicationContext(), resultData.getString(RESPONSE), Toast.LENGTH_LONG).show();
+                            recordCreateItem();
                             updateCatRepository();
                         }
                     }
@@ -103,6 +109,10 @@ public class ItemListActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void recordCreateItem() {
+        mFirebaseAnalytics.logEvent("create_item", new Bundle());
     }
 
     private void updateCatRepository() {
