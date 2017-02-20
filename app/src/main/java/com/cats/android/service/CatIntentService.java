@@ -5,13 +5,16 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+import android.util.Log;
 
 import com.cats.android.repository.CatRepository;
 import com.cats.android.model.AccessToken;
 import com.cats.android.model.Cat;
 import com.cats.android.util.WebManager;
+import com.google.firebase.crash.FirebaseCrash;
 
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -22,14 +25,18 @@ import static com.cats.android.util.Constants.*;
 
 public class CatIntentService extends IntentService {
 
-    public CatIntentService() {
-        super("CatIntentService");
-    }
-
     private ResultReceiver receiver;
+
+    private static final String TAG = "CatIntentService";
+
+    public CatIntentService() {
+        super(TAG);
+    }
 
     @Override
     protected void onHandleIntent(Intent i) {
+        FirebaseCrash.logcat(Log.INFO, TAG, "Service started");
+
         if (i != null) {
             // Extract the receiver passed into the service
             receiver = i.getParcelableExtra(RECEIVER);
@@ -58,6 +65,8 @@ public class CatIntentService extends IntentService {
     }
 
     private void getAll() {
+        FirebaseCrash.logcat(Log.INFO, TAG, "getAll()");
+
         CatClient catClient = ServiceGenerator.createService(CatClient.class);
         Call<List<Cat>> call = catClient.getAll();
         call.enqueue((new Callback<List<Cat>>() {
@@ -75,13 +84,16 @@ public class CatIntentService extends IntentService {
 
             @Override
             public void onFailure(Call<List<Cat>> call, Throwable t) {
-                t.printStackTrace();
+                FirebaseCrash.logcat(Log.ERROR, TAG, t.getMessage());
+                FirebaseCrash.report(t);
                 receiver.send(Activity.RESULT_CANCELED, new Bundle());
             }
         }));
     }
 
     private void get(Integer id) {
+        FirebaseCrash.logcat(Log.INFO, TAG, String.format(Locale.ENGLISH, "get(%d) ", id));
+
         CatClient catClient = ServiceGenerator.createService(CatClient.class);
         Call<Cat> call = catClient.get(id);
         call.enqueue((new Callback<Cat>() {
@@ -99,25 +111,32 @@ public class CatIntentService extends IntentService {
 
             @Override
             public void onFailure(Call<Cat> call, Throwable t) {
-                t.printStackTrace();
+                FirebaseCrash.logcat(Log.ERROR, TAG, t.getMessage());
+                FirebaseCrash.report(t);
                 receiver.send(Activity.RESULT_CANCELED, new Bundle());
             }
         }));
     }
 
     private void create(Cat cat) {
+        FirebaseCrash.logcat(Log.INFO, TAG, String.format("create(%s)", cat.toString()));
+
         CatClient catClient = ServiceGenerator.createService(CatClient.class);
         Call<ResponseBody> responseCall = catClient.create(cat);
         responseCall.enqueue(receiveResponseMessage());
     }
 
     private void update(Integer id, Cat cat) {
+        FirebaseCrash.logcat(Log.INFO, TAG, String.format(Locale.ENGLISH, "update(%d, %s) ", id, cat.toString()));
+
         CatClient catClient = ServiceGenerator.createService(CatClient.class);
         Call<ResponseBody> responseCall = catClient.update(id, cat);
         responseCall.enqueue(receiveResponseMessage());
     }
 
     private void delete(Integer id) {
+        FirebaseCrash.logcat(Log.INFO, TAG, String.format(Locale.ENGLISH, "delete(%d) ", id));
+
         CatClient catClient = ServiceGenerator.createService(CatClient.class);
         Call<ResponseBody> responseCall = catClient.delete(id);
         responseCall.enqueue(receiveResponseMessage());
@@ -134,13 +153,16 @@ public class CatIntentService extends IntentService {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                t.printStackTrace();
+                FirebaseCrash.logcat(Log.ERROR, TAG, t.getMessage());
+                FirebaseCrash.report(t);
                 receiver.send(Activity.RESULT_CANCELED, new Bundle());
             }
         };
     }
 
     private void getAccessToken(String code) {
+        FirebaseCrash.logcat(Log.INFO, TAG, String.format("getAccessToken(%s) ", code));
+
         CatClient loginService =
                 ServiceGenerator.createService(CatClient.class);
         Call<AccessToken> call = loginService.getAccessToken(code, "authorization_code", REDIRECT_URI);
@@ -159,7 +181,8 @@ public class CatIntentService extends IntentService {
 
             @Override
             public void onFailure(Call<AccessToken> call, Throwable t) {
-                t.printStackTrace();
+                FirebaseCrash.logcat(Log.ERROR, TAG, t.getMessage());
+                FirebaseCrash.report(t);
                 receiver.send(Activity.RESULT_CANCELED, new Bundle());
             }
         }));

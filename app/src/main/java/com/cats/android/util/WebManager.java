@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.ResultReceiver;
+import android.util.Log;
 
 import com.cats.android.model.AccessToken;
 import com.cats.android.model.Cat;
 import com.cats.android.service.CatIntentService;
+import com.google.firebase.crash.FirebaseCrash;
 
 import okhttp3.HttpUrl;
 
@@ -20,6 +22,8 @@ import static com.cats.android.util.Constants.*;
 public final class WebManager {
 
     private static AccessToken accessToken;
+
+    private static final String TAG = "WebManager";
 
     private WebManager() {
     }
@@ -60,6 +64,8 @@ public final class WebManager {
     }
 
     public static void authorize(Context context) {
+        FirebaseCrash.logcat(Log.INFO, TAG, "Authorization activity");
+
         if (accessToken == null || accessToken.isExpired()) {
             HttpUrl authorizeUrl = HttpUrl.parse(BASE_URL + "/oauth/authorize")
                     .newBuilder()

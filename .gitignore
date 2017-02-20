@@ -23,3 +23,6 @@ captures/
 app/libs/
 app/src/main/res/drawable/
 /build/
+
+
+google-services.json

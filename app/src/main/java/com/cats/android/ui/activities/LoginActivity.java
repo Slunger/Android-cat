@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 import com.cats.android.R;
 import com.cats.android.util.WebManager;
 import com.cats.android.util.Constants;
+import com.google.firebase.crash.FirebaseCrash;
 
 import static com.cats.android.util.Constants.CODE;
 
@@ -23,6 +25,8 @@ import static com.cats.android.util.Constants.CODE;
  * Created by andrey on 16.02.17.
  */
 public class LoginActivity extends AppCompatActivity {
+
+    private static final String TAG = "LoginActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+        FirebaseCrash.logcat(Log.INFO, TAG, "Activity created");
     }
 
     @Override
@@ -59,7 +64,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }, code);
                 } else if (uri.getQueryParameter("error") != null) {
-                    // show an error message here
+                    FirebaseCrash.logcat(Log.ERROR, TAG, uri.getQueryParameter("error"));
                 }
             }
         }
