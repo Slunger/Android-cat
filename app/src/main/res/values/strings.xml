@@ -8,4 +8,6 @@
     <string name="color">Color:</string>
     <string name="breed">Breed:</string>
     <string name="weight">Weight:</string>
+    <string name="log_token">Log Token</string>
+    <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
 </resources>

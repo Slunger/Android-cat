@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +24,7 @@ import com.cats.android.model.Cat;
 import com.cats.android.util.WebManager;
 import com.cats.android.ui.fragments.ItemDetailFragment;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.List;
 
@@ -43,6 +45,8 @@ public class ItemListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
+
+    private static final String TAG = "ItemListActivity";
 
     private RecyclerView recyclerView;
 
@@ -106,6 +110,14 @@ public class ItemListActivity extends AppCompatActivity {
 
         if (id == R.id.reload) {
             updateCatRepository();
+        } else if (id == R.id.logToken) {
+            // Get token
+            String token = FirebaseInstanceId.getInstance().getToken();
+
+            // Log and toast
+            String msg = getString(R.string.msg_token_fmt, token);
+            Log.d(TAG, msg);
+            Toast.makeText(ItemListActivity.this, msg, Toast.LENGTH_SHORT).show();
         }
 
         return super.onOptionsItemSelected(item);

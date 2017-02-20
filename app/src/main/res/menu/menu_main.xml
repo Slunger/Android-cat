@@ -7,4 +7,9 @@
         android:orderInCategory="100"
         android:title="@string/reload"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/logToken"
+        android:orderInCategory="100"
+        android:title="@string/log_token"
+        app:showAsAction="never" />
 </menu>
