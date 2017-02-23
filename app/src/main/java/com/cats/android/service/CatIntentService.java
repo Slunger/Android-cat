@@ -58,6 +58,10 @@ public class CatIntentService extends IntentService {
                 delete(id);
             } else if (GET_TOKEN.equals(action)) {
                 getAccessToken(i.getStringExtra(CODE));
+            } else if (SEND_TOKEN.equals(action)) {
+                sendToken(i.getStringExtra(TOKEN));
+            } else if (LIKED.equals(action)) {
+                liked(i.getIntExtra(ID, 0));
             } else {
                 return;
             }
@@ -158,6 +162,22 @@ public class CatIntentService extends IntentService {
                 receiver.send(Activity.RESULT_CANCELED, new Bundle());
             }
         };
+    }
+
+    private void sendToken(String token) {
+        FirebaseCrash.logcat(Log.INFO, TAG, String.format(Locale.ENGLISH, "sendToken(%s) ", token));
+
+        CatClient catClient = ServiceGenerator.createService(CatClient.class);
+        Call<ResponseBody> responseCall = catClient.sendToken(token);
+        responseCall.enqueue(receiveResponseMessage());
+    }
+
+    private void liked(Integer id) {
+        FirebaseCrash.logcat(Log.INFO, TAG, String.format(Locale.ENGLISH, "liked(%d) ", id));
+
+        CatClient catClient = ServiceGenerator.createService(CatClient.class);
+        Call<ResponseBody> responseCall = catClient.liked(id);
+        responseCall.enqueue(receiveResponseMessage());
     }
 
     private void getAccessToken(String code) {

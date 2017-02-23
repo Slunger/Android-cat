@@ -23,6 +23,8 @@ public class Cat implements Serializable {
 
     private int weight;
 
+    private int likes;
+
     public Cat(Integer id, String name, int age, String color, String breed, int weight) {
         this.id = id;
         this.age = age;
@@ -91,9 +93,17 @@ public class Cat implements Serializable {
         this.weight = weight;
     }
 
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(id, age, weight, color, breed, name);
+        return Objects.hash(id, age, weight, color, breed, name, likes);
     }
 
     @Override
@@ -105,6 +115,7 @@ public class Cat implements Serializable {
 
         if (age != cat.age) return false;
         if (weight != cat.weight) return false;
+        if (likes != cat.likes) return false;
         if (id != null ? !id.equals(cat.id) : cat.id != null) return false;
         if (color != null ? !color.equals(cat.color) : cat.color != null) return false;
         if (breed != null ? !breed.equals(cat.breed) : cat.breed != null) return false;
@@ -119,7 +130,8 @@ public class Cat implements Serializable {
                 ", age=" + age +
                 ", color='" + color + '\'' +
                 ", breed='" + breed + '\'' +
-                ", weight=" + weight +
+                ", weight='" + weight + '\'' +
+                ", likes=" + likes +
                 '}';
     }
 }

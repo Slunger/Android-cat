@@ -76,6 +76,22 @@ public class ItemDetailActivity extends AppCompatActivity {
             }
         });
 
+        FloatingActionButton fabLike = (FloatingActionButton) findViewById(R.id.fabLiked);
+        fabLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                WebManager.liked(view.getContext(), new ResultReceiver(new Handler()) {
+                    @Override
+                    public void onReceiveResult(int resultCode, Bundle resultData) {
+                        if (resultCode == RESULT_OK) {
+                            Toast.makeText(getApplicationContext(), resultData.getString(RESPONSE), Toast.LENGTH_LONG).show();
+                            recordLikedItem();
+                        }
+                    }
+                }, itemId);
+            }
+        });
+
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -117,6 +133,12 @@ public class ItemDetailActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putInt(FirebaseAnalytics.Param.ITEM_ID, itemId);
         mFirebaseAnalytics.logEvent("changed_item", bundle);
+    }
+
+    private void recordLikedItem() {
+        Bundle bundle = new Bundle();
+        bundle.putInt(FirebaseAnalytics.Param.ITEM_ID, itemId);
+        mFirebaseAnalytics.logEvent("liked_item", bundle);
     }
 
     @Override

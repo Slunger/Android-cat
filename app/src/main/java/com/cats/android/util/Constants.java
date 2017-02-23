@@ -15,8 +15,11 @@ public final class Constants {
     public static final String CAT = "cat";
     public static final String RECEIVER = "receiver";
     public static final String GET_TOKEN = "getToken";
+    public static final String SEND_TOKEN = "sendToken";
+    public static final String LIKED = "liked";
     public static final String CODE = "code";
     public static final String RESPONSE = "response";
+    public static final String TOKEN = "token";
 
     public static final String CLIENT_ID = "catId-client-android";
     public static final String CLIENT_SECRET = "secretId-client-android";

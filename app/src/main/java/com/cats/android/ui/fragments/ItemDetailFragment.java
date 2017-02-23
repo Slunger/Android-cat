@@ -1,6 +1,8 @@
 package com.cats.android.ui.fragments;
 
 import android.app.Activity;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +16,9 @@ import com.cats.android.repository.CatRepository;
 import com.cats.android.model.Cat;
 import com.cats.android.ui.activities.ItemDetailActivity;
 import com.cats.android.ui.activities.ItemListActivity;
+import com.cats.android.util.WebManager;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * A fragment representing a single Item detail screen.
@@ -49,10 +54,17 @@ public class ItemDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.item_detail, container, false);
+        final View rootView = inflater.inflate(R.layout.item_detail, container, false);
 
         if (cat != null) {
-            ((TextView) rootView.findViewById(R.id.item_detail)).setText(cat.toString());
+            WebManager.get(rootView.getContext(), new ResultReceiver(new Handler()) {
+                @Override
+                public void onReceiveResult(int resultCode, Bundle resultData) {
+                    if (resultCode == RESULT_OK) {
+                        ((TextView) rootView.findViewById(R.id.item_detail)).setText(CatRepository.getCAT().toString());
+                    }
+                }
+            }, cat.getId());
         }
 
         return rootView;

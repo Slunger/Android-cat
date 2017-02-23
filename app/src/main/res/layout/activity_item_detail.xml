@@ -52,10 +52,19 @@
         app:rippleColor="@android:color/white" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabDelete"
+        android:id="@+id/fabLiked"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@android:drawable/star_off"
+        app:backgroundTint="@android:color/holo_purple" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left|bottom"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_menu_delete"
         app:backgroundTint="?android:attr/colorPressedHighlight" />

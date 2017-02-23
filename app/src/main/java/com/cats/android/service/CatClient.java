@@ -43,4 +43,10 @@ public interface CatClient {
             @Field("code") String code,
             @Field("grant_type") String grantType,
             @Field("redirect_uri") String redirect);
+
+    @PUT("/cats/liked/{id}")
+    Call<ResponseBody> liked(@Path("id") Integer id);
+
+    @POST("/firebase/token")
+    Call<ResponseBody> sendToken(@Body String token);
 }

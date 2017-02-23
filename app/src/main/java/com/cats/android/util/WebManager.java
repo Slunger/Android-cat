@@ -79,6 +79,16 @@ public final class WebManager {
         }
     }
 
+    public static void sendToken(Context context, ResultReceiver rec, String token) {
+        context.startService(buildCatIntent(context, SEND_TOKEN, rec)
+                .putExtra(TOKEN, token));
+    }
+
+    public static void liked(Context context, ResultReceiver rec, Integer id) {
+        context.startService(buildCatIntent(context, LIKED, rec)
+                .putExtra(ID, id));
+    }
+
     public static AccessToken getAccessToken() {
         return accessToken;
     }
