@@ -23,6 +23,8 @@ public final class WebManager {
 
     private static AccessToken accessToken;
 
+    private static String firebaseToken;
+
     private static final String TAG = "WebManager";
 
     private WebManager() {
@@ -95,5 +97,13 @@ public final class WebManager {
 
     public static void setAccessToken(AccessToken accessToken) {
         WebManager.accessToken = accessToken;
+    }
+
+    public static String getFirebaseToken() {
+        return firebaseToken;
+    }
+
+    public static void setFirebaseToken(String firebaseToken) {
+        WebManager.firebaseToken = firebaseToken;
     }
 }

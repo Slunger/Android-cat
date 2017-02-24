@@ -47,6 +47,6 @@ public interface CatClient {
     @PUT("/cats/liked/{id}")
     Call<ResponseBody> liked(@Path("id") Integer id);
 
-    @POST("/firebase/token")
-    Call<ResponseBody> sendToken(@Body String token);
+    @PUT("/firebase/{token}")
+    Call<ResponseBody> sendToken(@Path("token") String token);
 }

@@ -78,9 +78,21 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void goToItemListActivity() {
+        sendRegistrationToServer(WebManager.getFirebaseToken());
         Intent intent = new Intent(this, ItemListActivity.class);
 
         startActivity(intent);
         finish();
+    }
+
+    private void sendRegistrationToServer(String token) {
+        WebManager.sendToken(this, new ResultReceiver(new Handler()) {
+            @Override
+            public void onReceiveResult(int resultCode, Bundle resultData) {
+                if (resultCode == RESULT_OK) {
+                    Log.d(TAG, "Refreshed token were poisoned on the server");
+                }
+            }
+        }, token);
     }
 }
